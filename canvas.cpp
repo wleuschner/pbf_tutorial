@@ -6,7 +6,7 @@
 
 Canvas::Canvas(QWidget *parent) : QWidget(parent)
 {
-    solver = new SolverGPU(width(),height());
+    solver = new Solver(width(),height());
     particleSize = 10.0f;
     showPressure = false;
 

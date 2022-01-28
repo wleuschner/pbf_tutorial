@@ -160,26 +160,23 @@ void SolverGPU::solve()
     clEnqueueNDRangeKernel(queue, bucket_count,1,nullptr,&num_particles, nullptr, 0, nullptr, nullptr);
 
     size_t local_size = 128;
-    for(unsigned i=0;i<1;i++)
-    {
-        size_t global_size = num_buckets;
-        clSetKernelArg(histogram,0,sizeof(cl_mem),&counter_buffer);
-        clSetKernelArg(histogram,1,sizeof(cl_mem),&histogram_buffer);
-        clSetKernelArg(histogram,2,sizeof(cl_mem),&scratch_buffer);
-        clEnqueueNDRangeKernel(queue, histogram,1,nullptr,&global_size, &local_size, 0, nullptr, nullptr);
+    size_t global_size = num_buckets;
+    clSetKernelArg(histogram,0,sizeof(cl_mem),&counter_buffer);
+    clSetKernelArg(histogram,1,sizeof(cl_mem),&histogram_buffer);
+    clSetKernelArg(histogram,2,sizeof(cl_mem),&scratch_buffer);
+    clEnqueueNDRangeKernel(queue, histogram,1,nullptr,&global_size, &local_size, 0, nullptr, nullptr);
 
-        global_size = std::ceil(num_buckets/128.0);
-        clSetKernelArg(histogram2,0,sizeof(cl_mem),&scratch_buffer);
-        clSetKernelArg(histogram2,1,sizeof(cl_mem),&scratch_buffer2);
-        clEnqueueNDRangeKernel(queue, histogram2,1,nullptr,&global_size, &local_size, 0, nullptr, nullptr);
+    global_size = std::ceil(num_buckets/128.0);
+    clSetKernelArg(histogram2,0,sizeof(cl_mem),&scratch_buffer);
+    clSetKernelArg(histogram2,1,sizeof(cl_mem),&scratch_buffer2);
+    clEnqueueNDRangeKernel(queue, histogram2,1,nullptr,&global_size, &local_size, 0, nullptr, nullptr);
 
-        global_size=num_buckets-128;
-        clSetKernelArg(histogram3,0,sizeof(cl_mem),&scratch_buffer2);
-        clSetKernelArg(histogram3,1,sizeof(cl_mem),&histogram_buffer);
-        clSetKernelArg(histogram3,2,sizeof(cl_mem),&counter_buffer);
+    global_size=num_buckets-128;
+    clSetKernelArg(histogram3,0,sizeof(cl_mem),&scratch_buffer2);
+    clSetKernelArg(histogram3,1,sizeof(cl_mem),&histogram_buffer);
+    clSetKernelArg(histogram3,2,sizeof(cl_mem),&counter_buffer);
 
-        clEnqueueNDRangeKernel(queue, histogram3,1,nullptr,&global_size, &local_size, 0, nullptr, nullptr);
-    }
+    clEnqueueNDRangeKernel(queue, histogram3,1,nullptr,&global_size, &local_size, 0, nullptr, nullptr);
 
     clEnqueueFillBuffer(queue, scratch_buffer, &pattern, sizeof(pattern),0, num_buckets * sizeof(unsigned int),0,nullptr,nullptr);
 
