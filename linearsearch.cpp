@@ -6,6 +6,11 @@ LinearSearch::LinearSearch(std::vector<Particle>& particles)
 
 }
 
+LinearSearch::~LinearSearch()
+{
+
+}
+
 void LinearSearch::rebuild(float width, float height, float radius)
 {
 }

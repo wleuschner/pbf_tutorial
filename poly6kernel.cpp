@@ -6,6 +6,11 @@ Poly6Kernel::Poly6Kernel()
 
 }
 
+Poly6Kernel::~Poly6Kernel()
+{
+
+}
+
 float Poly6Kernel::evaluate(float r, float h)
 {
     if(r==0.0f)

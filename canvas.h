@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QTimer>
 #include <glm/glm.hpp>
-#include "solver.h"
+#include "abstractsolver.h"
 
 class Canvas : public QWidget
 {
@@ -30,6 +30,7 @@ public slots:
     void changeTimestep(double value);
     void changeIterations(int niter);
     void changeSpatialStruct(int index);
+    void setGPU(bool gpu);
 private slots:
     void simulate();
 private:
@@ -37,7 +38,7 @@ private:
     float particleSize;
     QTimer updateTimer;
 
-    Solver* solver;
+    AbstractSolver* solver;
     glm::vec2 line[2];
 };
 

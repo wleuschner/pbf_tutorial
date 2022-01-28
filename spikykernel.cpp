@@ -6,6 +6,10 @@ SpikyKernel::SpikyKernel()
 
 }
 
+SpikyKernel::~SpikyKernel()
+{
+}
+
 float SpikyKernel::evaluate(float r, float h)
 {
     return (15/(M_PI*std::pow(h,6)))*std::pow(h-r,3);

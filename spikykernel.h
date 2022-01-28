@@ -6,6 +6,7 @@ class SpikyKernel : public AbstractKernel
 {
 public:
     SpikyKernel();
+    ~SpikyKernel();
     float evaluate(float r, float h) override;
     glm::vec2 gradient(float r, float h, const glm::vec2 n) override;
     float laplace(float r, float h) override;

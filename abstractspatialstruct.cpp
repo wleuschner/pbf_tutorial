@@ -4,3 +4,8 @@ AbstractSpatialStruct::AbstractSpatialStruct(std::vector<Particle>& particles)
     : particles(particles)
 {
 }
+
+AbstractSpatialStruct::~AbstractSpatialStruct()
+{
+
+}

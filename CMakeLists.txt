@@ -23,8 +23,12 @@ add_executable(PSF2D
   canvas.cpp
   canvas.h
   particle.h
+  abstractsolver.cpp
+  abstractsolver.h
   solver.cpp
   solver.h
+  solver_gpu.cpp
+  solver_gpu.h
   boundary.h
   abstractkernel.cpp
   abstractkernel.h
@@ -40,7 +44,12 @@ add_executable(PSF2D
   linearsearch.h
   radixsort.cpp
   radixsort.h
+  simulation.h
 )
 
+find_package(OpenCL)
 find_package(OpenMP)
-target_link_libraries(PSF2D PRIVATE Qt5::Widgets OpenMP::OpenMP_CXX)
+
+include_directories(${OpenCL_INCLUDE_DIRS})
+link_directories(${OpenCL_LIBRARY})
+target_link_libraries(PSF2D PRIVATE Qt5::Widgets OpenMP::OpenMP_CXX ${OpenCL_LIBRARY})

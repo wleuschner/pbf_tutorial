@@ -4,3 +4,8 @@ AbstractKernel::AbstractKernel()
 {
 
 }
+
+AbstractKernel::~AbstractKernel()
+{
+
+}

@@ -19,20 +19,8 @@ glm::vec3 intersect_line_line(const glm::vec2& a, const glm::vec2& b,
     return glm::vec3(a+t*(b-a),t);
 }
 
-Solver::Solver(unsigned int width, unsigned int height)
+Solver::Solver(unsigned int width, unsigned int height) : AbstractSolver(width,height)
 {
-    domain_width = width;
-    domain_height = height;
-    boundaries.resize(4);
-
-    iterations = 10;
-    timestep = 0.1f;
-    search_radius = 10.0f;
-    resting_density = 10.0f;
-    artificial_density = 0.0001f;
-    viscosity = 0.0f;
-
-    spatial_struct = new LinearSearch(particles);
     densityKernel = new Poly6Kernel();
     gradientKernel = new SpikyKernel();
     viscKernel = new ViscKernel();
@@ -40,50 +28,9 @@ Solver::Solver(unsigned int width, unsigned int height)
 
 Solver::~Solver()
 {
-    delete spatial_struct;
-}
-
-void Solver::setIterations(float niter)
-{
-    iterations = niter;
-}
-
-void Solver::setTimeStep(float step)
-{
-    timestep = step;
-}
-
-void Solver::setSearchRadius(float radius)
-{
-    search_radius = radius;
-}
-
-void Solver::setRestingDensity(float restingDensity)
-{
-    resting_density = restingDensity;
-}
-
-void Solver::setArtificialDensity(float artificialDensity)
-{
-    artificial_density = artificialDensity;
-}
-
-void Solver::setViscosity(float visc)
-{
-    viscosity = visc;
-}
-
-void Solver::setSpatialStruct(SpatialStructType type)
-{
-    delete spatial_struct;
-    if(type == LINEAR_SEARCH)
-    {
-        spatial_struct = new LinearSearch(particles);
-    }
-    else if(type == RADIX_SORT)
-    {
-        spatial_struct = new RadixSort(particles);
-    }
+    delete densityKernel;
+    delete gradientKernel;
+    delete viscKernel;
 }
 
 void Solver::solve()
@@ -146,8 +93,6 @@ void Solver::solve()
                     //If particle is not on line segment, ignore response
                     if(pos.z<0.0 || pos.z>1.0) continue;
 
-                    glm::vec2 r = glm::normalize(bound.line[1]-bound.line[0]);
-                    float s = glm::length(glm::vec2(pos)-(particle.proj_pos + particle.delta));
                     particle.delta = -particle.proj_pos + (glm::vec2(pos) + 0.1f * si*bound.normal);
                 }
             }
@@ -190,7 +135,6 @@ float Solver::computeDensity(const Particle& particle, const std::vector<unsigne
     for(unsigned int p=0;p<neighbors.size();p++)
     {
         const Particle& neighbor = particles[neighbors[p]];
-        if(glm::distance(particle.proj_pos,neighbor.pos)==0.0f) continue;
         density += densityKernel->evaluate(glm::distance(particle.proj_pos,neighbor.pos),search_radius);
     }
     return density;
@@ -219,50 +163,4 @@ float Solver::computePressureGradientSum(const Particle& particle, const std::ve
         pressureSum += glm::dot(in_pressure,in_pressure);
     }
     return pressureSum;
-}
-
-void Solver::changeDomain(float right, float top, float left, float bottom)
-{
-    domain_width = (-right+left);
-    domain_height = (-bottom+top);
-
-    boundaries[0].line[0] = glm::vec2(left,bottom);
-    boundaries[0].line[1] = glm::vec2(left,top);
-    boundaries[0].normal = glm::vec2(-1.0,0.0);
-
-    boundaries[1].line[0] = glm::vec2(left,top);
-    boundaries[1].line[1] = glm::vec2(right,top);
-    boundaries[1].normal = glm::vec2(0.0,-1.0);
-
-
-    boundaries[2].line[0] = glm::vec2(right,top);
-    boundaries[2].line[1] = glm::vec2(right,bottom);
-    boundaries[2].normal = glm::vec2(-1.0,0.0);
-
-
-    boundaries[3].line[0] = glm::vec2(right,bottom);
-    boundaries[3].line[1] = glm::vec2(left,bottom);
-    boundaries[3].normal = glm::vec2(0.0,-1.0);
-
-}
-
-void Solver::addBoundary(Boundary& boundary)
-{
-    boundaries.push_back(boundary);
-}
-
-void Solver::addParticle(Particle& particle)
-{
-    particle.vel = glm::vec2(0.0f,0.0f);
-    particles.push_back(particle);
-}
-
-const std::vector<Boundary>& Solver::getBoundaries()
-{
-    return boundaries;
-}
-
-const std::vector<Particle>& Solver::getParticles()
-{
-    return particles;
 }

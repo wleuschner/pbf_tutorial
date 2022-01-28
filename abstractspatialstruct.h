@@ -7,6 +7,7 @@ class AbstractSpatialStruct
 {
 public:
     AbstractSpatialStruct(std::vector<Particle>& particles);
+    virtual ~AbstractSpatialStruct();
     virtual void rebuild(float width, float height, float radius) = 0;
     virtual std::vector<unsigned int> findNeighbors(unsigned int index, float r) = 0;
 protected:

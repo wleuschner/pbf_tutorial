@@ -1,12 +1,12 @@
 #include "canvas.h"
 #include <QPainter>
 #include <QMouseEvent>
+#include "solver.h"
+#include "solver_gpu.h"
 
 Canvas::Canvas(QWidget *parent) : QWidget(parent)
 {
-    int w = width();
-    int h = height();
-    solver = new Solver(width(),height());
+    solver = new SolverGPU(width(),height());
     particleSize = 10.0f;
     showPressure = false;
 
@@ -94,6 +94,25 @@ void Canvas::changeSpatialStruct(int index)
     solver->setSpatialStruct(type);
 }
 
+void Canvas::setGPU(bool gpu)
+{
+    std::vector<Particle> particles = solver->getParticles();
+    std::vector<Boundary> boundaries = solver->getBoundaries();
+    delete solver;
+    if(gpu)
+    {
+
+        solver = new SolverGPU(width(),height());
+    }
+    else
+    {
+        solver = new Solver(width(),height());
+    }
+    solver->changeDomain(0.0,height()-100,width()-100,0.0f);
+    solver->setParticles(particles);
+    solver->setBoundaries(boundaries);
+}
+
 void Canvas::simulate()
 {
     solver->solve();
@@ -129,6 +148,7 @@ void Canvas::paintEvent(QPaintEvent *event)
     brush.setStyle(Qt::BrushStyle::SolidPattern);
     painter.setPen(color);
     painter.setBrush(brush);
+
     for(unsigned int i=0;i<particles.size();i++)
     {
         const Particle& p = particles[i];

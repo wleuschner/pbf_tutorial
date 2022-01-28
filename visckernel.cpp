@@ -6,6 +6,11 @@ ViscKernel::ViscKernel()
 
 }
 
+ViscKernel::~ViscKernel()
+{
+
+}
+
 float ViscKernel::evaluate(float r, float h)
 {
     return 0.0f;
