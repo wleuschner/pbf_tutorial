@@ -35,6 +35,7 @@ Solver::~Solver()
 
 void Solver::solve()
 {
+    //Resize temporary velocity accumulation buffer
     if(particles.size()!=viscAcc.size())
     {
         viscAcc.resize(particles.size());
@@ -132,6 +133,7 @@ void Solver::solve()
         }
     }
 
+    //Update final velocity
     #pragma omp parallel for
     for(unsigned int i=0;i<particles.size();i++)
     {
