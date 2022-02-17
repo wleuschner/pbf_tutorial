@@ -35,6 +35,11 @@ Solver::~Solver()
 
 void Solver::solve()
 {
+    if(particles.size()!=viscAcc.size())
+    {
+        viscAcc.resize(particles.size());
+    }
+
     spatial_struct->rebuild(domain_width,domain_height,search_radius);
 
     #pragma omp parallel for
@@ -118,14 +123,20 @@ void Solver::solve()
         p.pos = p.proj_pos;
 
         //Compute viscosity influence
-        glm::vec2 viscAcc = glm::vec2(0.0f,0.0f);
+        viscAcc[i] = glm::vec2(0.0f,0.0f);
         for(unsigned int n=0;n<neighbors.size();n++)
         {
             const Particle& neighbor = particles[neighbors[n]];
             glm::vec2 viscVel = p.vel - neighbor.vel;
-            viscAcc += viscVel*viscKernel->laplace(glm::distance(p.pos,neighbor.pos),search_radius);
+            viscAcc[i] += viscVel*viscKernel->laplace(glm::distance(p.pos,neighbor.pos),search_radius);
         }
-        p.vel += viscosity*viscAcc;
+    }
+
+    #pragma omp parallel for
+    for(unsigned int i=0;i<particles.size();i++)
+    {
+        Particle& p = particles[i];
+        p.vel += viscosity*viscAcc[i];
     }
 }
 

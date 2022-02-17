@@ -18,6 +18,7 @@ private:
     float computeDensity(const Particle& particle, const std::vector<unsigned int>& neighbors);
     float computePressureGradientSum(const Particle& particle, const std::vector<unsigned int> &neighbors);
 
+    std::vector<glm::vec2> viscAcc;
     AbstractKernel* densityKernel;
     AbstractKernel* gradientKernel;
     AbstractKernel* viscKernel;
