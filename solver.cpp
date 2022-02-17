@@ -35,12 +35,6 @@ Solver::~Solver()
 
 void Solver::solve()
 {
-    //Resize temporary velocity accumulation buffer
-    if(particles.size()!=viscAcc.size())
-    {
-        viscAcc.resize(particles.size());
-    }
-
     spatial_struct->rebuild(domain_width,domain_height,search_radius);
 
     #pragma omp parallel for
@@ -114,6 +108,7 @@ void Solver::solve()
     }
 
     //Update particle positions and velocities based on projected positions
+    std::vector<glm::vec2> viscAcc(particles.size());
     #pragma omp parallel for
     for(unsigned int i=0;i<particles.size();i++)
     {
@@ -122,8 +117,14 @@ void Solver::solve()
         Particle& p = particles[i];
         p.vel = (1.0f/timestep)*(p.proj_pos-p.pos);
         p.pos = p.proj_pos;
+    }
 
-        //Compute viscosity influence
+    //Compute viscosity influence
+    for(unsigned int i=0;i<particles.size();i++)
+    {
+        std::vector<unsigned int> neighbors = spatial_struct->findNeighbors(i,search_radius);
+        Particle& p = particles[i];
+
         viscAcc[i] = glm::vec2(0.0f,0.0f);
         for(unsigned int n=0;n<neighbors.size();n++)
         {
@@ -133,10 +134,10 @@ void Solver::solve()
         }
     }
 
-    //Update final velocity
-    #pragma omp parallel for
+    //Update Final Velocity
     for(unsigned int i=0;i<particles.size();i++)
     {
+        std::vector<unsigned int> neighbors = spatial_struct->findNeighbors(i,search_radius);
         Particle& p = particles[i];
         p.vel += viscosity*viscAcc[i];
     }

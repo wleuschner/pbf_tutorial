@@ -199,6 +199,7 @@ static const char* simulation_source =
 "    int index = get_global_id(0);\n"
 "    Particle* particle = &particles[index];"
 "    particle->vel = (1.0f/timestep) * (particle->proj_pos-particle->pos);\n"
+"    barrier(CLK_GLOBAL_MEM_FENCE);\n"
 "    float2 viscAcc = (float2)(0.0f,0.0f);"
 "    float r_squared = radius * radius;\n"
 "    for(int y=-1;y<=1;y++)\n"
