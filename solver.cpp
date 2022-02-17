@@ -35,6 +35,10 @@ Solver::~Solver()
 
 void Solver::solve()
 {
+    if(particles.size()!=viscAcc.size())
+    {
+        viscAcc.resize(particles.size());
+    }
     spatial_struct->rebuild(domain_width,domain_height,search_radius);
 
     #pragma omp parallel for
