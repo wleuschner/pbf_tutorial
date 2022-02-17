@@ -112,7 +112,6 @@ void Solver::solve()
     }
 
     //Update particle positions and velocities based on projected positions
-    std::vector<glm::vec2> viscAcc(particles.size());
     #pragma omp parallel for
     for(unsigned int i=0;i<particles.size();i++)
     {
