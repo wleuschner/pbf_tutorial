@@ -124,6 +124,7 @@ void Solver::solve()
     }
 
     //Compute viscosity influence
+    #pragma omp parallel for
     for(unsigned int i=0;i<particles.size();i++)
     {
         std::vector<unsigned int> neighbors = spatial_struct->findNeighbors(i,search_radius);
@@ -139,6 +140,7 @@ void Solver::solve()
     }
 
     //Update Final Velocity
+    #pragma omp parallel for
     for(unsigned int i=0;i<particles.size();i++)
     {
         std::vector<unsigned int> neighbors = spatial_struct->findNeighbors(i,search_radius);
