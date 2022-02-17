@@ -12,9 +12,8 @@ RadixSort::~RadixSort()
 
 void RadixSort::rebuild(float width, float height, float radius)
 {
-    float radius_half = radius/2.0f;
-    discrete_width = ceil(width/radius_half);
-    discrete_height = ceil(height/radius_half);
+    discrete_width = ceil(width/radius);
+    discrete_height = ceil(height/radius);
     unsigned int num_buckets = discrete_width * discrete_height;
 
     std::vector<std::atomic<unsigned int>> buckets(num_buckets);

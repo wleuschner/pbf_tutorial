@@ -48,7 +48,7 @@ SolverGPU::SolverGPU(unsigned int width, unsigned int height) : AbstractSolver(w
     queue = clCreateCommandQueueWithProperties(context,device_id,0,&ret);
 
     size_t source_len = strlen(simulation_source);
-    program = clCreateProgramWithSource(context,1,&simulation_source,&source_len,nullptr);
+    program = clCreateProgramWithSource(context,1 ,&simulation_source, &source_len,nullptr);
 
     clBuildProgram(program,1,&device_id,"-cl-std=CL2.0",create_kernel_callback,device_id);
     bucket_count = clCreateKernel(program,"bucket_count",nullptr);
@@ -218,6 +218,11 @@ void SolverGPU::solve()
     }
     clSetKernelArg(update_particles,0,sizeof(cl_mem),&particles_buffer_back);
     clSetKernelArg(update_particles,1,sizeof(float),&timestep);
+    clSetKernelArg(update_particles,2,sizeof(glm::uvec2),&dims);
+    clSetKernelArg(update_particles,3,sizeof(cl_mem),&histogram_buffer);
+    clSetKernelArg(update_particles,4,sizeof(float),&viscosity);
+    clSetKernelArg(update_particles,5,sizeof(float),&search_radius);
+
     clEnqueueNDRangeKernel(queue, update_particles,1,nullptr,&num_particles, nullptr, 0, nullptr, nullptr);
     clEnqueueReadBuffer(queue, particles_buffer_back, true, 0, sizeof(Particle)*num_particles,particles.data(),0,nullptr,nullptr);
     clFinish(queue);
